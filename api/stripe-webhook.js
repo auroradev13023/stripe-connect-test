@@ -5,6 +5,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 module.exports = async (req, res) => {
   const event = req.body;
 
+  
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
 
@@ -13,6 +15,11 @@ module.exports = async (req, res) => {
 
     console.log('Amount Total:', amountTotal);
     console.log('Partner Share:', partnerShare);
+
+    const balance = await stripe.balance.retrieve();
+
+console.log('Session Currency:', session.currency);
+console.log('Balance:', JSON.stringify(balance, null, 2));
 
     try {
       const transfer = await stripe.transfers.create({
