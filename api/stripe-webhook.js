@@ -12,8 +12,19 @@ module.exports = async (req, res) => {
     const partnerShare = Math.round(amountTotal * 0.6);
 
     console.log('Amount Total:', amountTotal);
-    console.log('Kate Share:', partnerShare);
-    console.log('Iryna Share:', amountTotal - partnerShare);
+    console.log('Partner Share:', partnerShare);
+
+    try {
+      const transfer = await stripe.transfers.create({
+        amount: partnerShare,
+        currency: session.currency,
+        destination: process.env.CONNECTED_ACCOUNT_ID,
+      });
+
+      console.log('Transfer created:', transfer.id);
+    } catch (error) {
+      console.error('Transfer failed:', error);
+    }
   }
 
   res.status(200).json({ received: true });
